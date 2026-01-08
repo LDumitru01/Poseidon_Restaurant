@@ -108,6 +108,21 @@
                         </p>
                     </div>
                 </div>
+                
+                <!-- Values Card -->
+                <div class="relative group">
+                    <div class="absolute -inset-1 bg-gradient-to-r from-gold-light/20 via-gold-dark/20 to-gold-light/20 rounded-3xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div class="relative bg-gradient-to-br from-dark-700/80 via-dark-700/60 to-dark-800/80 backdrop-blur-md rounded-3xl p-8 lg:p-10 border border-gold/20 hover:border-gold-light/40 transition-all duration-500">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-1 h-12 bg-gradient-to-b from-gold-light to-gold-dark rounded-full"></div>
+                            <h3 class="text-2xl md:text-3xl font-heading text-gold-light" data-translate="about.values.title">Valorile Noastre</h3>
+                        </div>
+                        <p class="text-lg md:text-xl text-text-light leading-relaxed" data-translate="about.values.text">
+                            Credem în <span class="text-gold-light font-semibold">excelență</span>, <span class="text-gold-light font-semibold">autenticitate</span> și <span class="text-gold-light font-semibold">atenție la detalii</span>. 
+                            Fiecare eveniment este unic și merită să fie tratat cu pasiune și dedicare, transformându-l într-o experiență de neuitat pentru tine și oaspeții tăi.
+                        </p>
+                    </div>
+                </div>
             </div>
             
             <!-- Right Column - Benefits (4 columns) -->

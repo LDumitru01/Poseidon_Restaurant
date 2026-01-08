@@ -1,7 +1,35 @@
 <?php
-// Obține limba din URL sau default 'ro'
-$currentLang = isset($_GET['lang']) && ($_GET['lang'] === 'ro' || $_GET['lang'] === 'ru') ? $_GET['lang'] : 'ro';
-$baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . strtok($_SERVER['REQUEST_URI'], '?');
+// Obține limba din path (/ro sau /ru) sau default 'ro'
+$requestUri = $_SERVER['REQUEST_URI'];
+$path = parse_url($requestUri, PHP_URL_PATH);
+$pathParts = array_filter(explode('/', trim($path, '/')), function($part) {
+    return !empty($part);
+});
+$pathParts = array_values($pathParts); // Reindex array
+
+// Verifică dacă ultimul segment este 'ro' sau 'ru' (limba)
+$currentLang = 'ro'; // Default
+if (!empty($pathParts)) {
+    $lastPart = end($pathParts);
+    if ($lastPart === 'ro' || $lastPart === 'ru') {
+        $currentLang = $lastPart;
+    }
+}
+
+// Obține base URL-ul (cu subdirectorul dacă există, dar fără limba) pentru hreflang tags
+$protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? "https" : "http";
+$host = $_SERVER['HTTP_HOST'];
+
+// Construiește base path-ul (fără limba)
+$basePath = '';
+foreach ($pathParts as $part) {
+    if ($part !== 'ro' && $part !== 'ru') {
+        $basePath .= '/' . $part;
+    }
+}
+
+// Asigură-te că baseUrl este corect (pentru root domain va fi doar protocol + host)
+$baseUrl = $protocol . "://" . $host . $basePath;
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo $currentLang; ?>" id="htmlLang">
@@ -11,10 +39,13 @@ $baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "
     <meta name="description" content="Restaurant Poseidon - Restaurant de nuntă elegant pentru evenimentul tău de vis. Locație rafinată, meniu personalizat, servicii complete pentru nunți memorabile.">
     <title>Restaurant Poseidon - Restaurant de Nuntă Elegant</title>
     
+    <!-- Base URL pentru path-uri relative (funcționează pe root domain și subdirectoare) -->
+    <base href="<?php echo $baseUrl; ?>/">
+    
     <!-- Hreflang tags pentru SEO -->
-    <link rel="alternate" hreflang="ro" href="<?php echo $baseUrl; ?>?lang=ro">
-    <link rel="alternate" hreflang="ru" href="<?php echo $baseUrl; ?>?lang=ru">
-    <link rel="alternate" hreflang="x-default" href="<?php echo $baseUrl; ?>?lang=ro">
+    <link rel="alternate" hreflang="ro" href="<?php echo $baseUrl; ?>/ro">
+    <link rel="alternate" hreflang="ru" href="<?php echo $baseUrl; ?>/ru">
+    <link rel="alternate" hreflang="x-default" href="<?php echo $baseUrl; ?>/ro">
     
     <!-- Google Fonts - Premium Elegant Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -103,8 +134,8 @@ body {
     
     /* HERO SECTION - Fix pentru a începe exact de la header */
     #hero {
-        margin-top: 0;
-        padding-top: 0;
+        margin-top: 0 !important;
+        padding-top: 0 !important;
         position: relative;
         top: 0;
         background-color: #1a1612; /* Background solid pentru a preveni gap-uri */
@@ -113,12 +144,13 @@ body {
     
     /* Imaginea de fundal trebuie să înceapă exact de la top (sub header) */
     #hero > .absolute.inset-0 {
-        top: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        bottom: 0 !important;
+        top: -1px !important;
+        left: -1px !important;
+        right: -1px !important;
+        bottom: -1px !important;
         position: absolute;
         z-index: 0;
+        overflow: hidden;
     }
     
     /* Asigură că imaginea acoperă complet, începând de la top */
@@ -132,6 +164,20 @@ body {
         object-fit: cover;
         object-position: center center;
         display: block;
+    }
+    
+    /* Fix pentru desktop - elimină gap-uri la margini */
+    @media (min-width: 769px) {
+        #hero > .absolute.inset-0 {
+            overflow: hidden;
+        }
+        
+        #hero > .absolute.inset-0 img {
+            transform: scale(1.05);
+            width: calc(100% + 2px);
+            height: calc(100% + 2px);
+            margin: -1px;
+        }
     }
     
     /* Overlay trebuie să fie exact peste imagine */
@@ -150,6 +196,8 @@ body {
             min-height: 100vh;
             position: relative;
             overflow: hidden;
+            margin-top: 0;
+            padding-top: 0;
         }
         
         #hero > .absolute.inset-0 {
@@ -162,20 +210,21 @@ body {
             height: 100%;
             min-height: 100vh;
             z-index: 0;
+            overflow: hidden;
         }
         
         #hero > .absolute.inset-0 img {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: -10px; /* Compensate for any potential gap */
+            left: -10px;
+            width: calc(100% + 20px);
+            height: calc(100% + 20px);
             min-height: 100vh;
             min-width: 100%;
             object-fit: cover;
             object-position: center center;
-            transform: scale(1.15);
-            -webkit-transform: scale(1.15);
+            transform: scale(1.08); /* Slightly scaled to ensure coverage */
+            -webkit-transform: scale(1.08);
         }
         
         #hero > .absolute.z-10 {

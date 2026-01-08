@@ -20,20 +20,48 @@ function scrollToSection(sectionId) {
     }
 }
 
-// Funcție helper pentru a obține limba curentă din URL
+// Funcție helper pentru a obține limba curentă din URL (din path: /ro sau /ru, funcționează și cu subdirectoare)
 function getCurrentLang() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const lang = urlParams.get('lang');
-    return (lang === 'ro' || lang === 'ru') ? lang : 'ro';
+    const path = window.location.pathname;
+    const pathParts = path.split('/').filter(part => part !== '');
+    
+    // Caută 'ro' sau 'ru' în path
+    for (let i = 0; i < pathParts.length; i++) {
+        if (pathParts[i] === 'ro' || pathParts[i] === 'ru') {
+            return pathParts[i];
+        }
+    }
+    
+    return 'ro'; // Default
 }
 
-// Funcție pentru a adăuga parametrul lang la link-uri
+// Funcție pentru a adăuga limba la link-uri (subdirectoare: /ro sau /ru)
 function addLangToUrl(url) {
     const lang = getCurrentLang();
-    if (url.includes('#')) {
-        return url.split('#')[0] + (url.includes('?') ? '&' : '?') + 'lang=' + lang + '#' + url.split('#')[1];
+    // Dacă URL-ul este relativ (începe cu # sau /)
+    if (url.startsWith('#')) {
+        // Pentru hash-uri, păstrăm limba din URL-ul curent
+        return url;
     }
-    return url + (url.includes('?') ? '&' : '?') + 'lang=' + lang;
+    
+    // Pentru URL-uri absolute sau relative, adăugăm limba ca subdirector
+    try {
+        const urlObj = new URL(url, window.location.origin);
+        const path = urlObj.pathname;
+        
+        // Elimină limba existentă dacă există
+        let cleanPath = path.replace(/^\/(ro|ru)/, '');
+        if (!cleanPath.startsWith('/')) {
+            cleanPath = '/' + cleanPath;
+        }
+        
+        // Adaugă limba
+        urlObj.pathname = '/' + lang + cleanPath;
+        return urlObj.toString();
+    } catch (e) {
+        // Dacă URL-ul nu este valid, returnează-l așa cum este
+        return url;
+    }
 }
 
 // ============================================

@@ -3,12 +3,12 @@
 <!-- HERO Section -->
 <section id="hero" class="relative min-h-screen flex items-center justify-center overflow-hidden" style="background-color: #1a1612;">
     <!-- Background Image -->
-    <div class="absolute inset-0 z-0 top-0 left-0 right-0 bottom-0" style="background-color: #1a1612;">
-        <img src="assets/img/poseidon.png" alt="Restaurant Poseidon" class="w-full h-full object-cover object-center blur-[1px] scale-110" style="background-color: #1a1612;">
+    <div class="absolute inset-0 z-0 top-0 left-0 right-0 bottom-0 overflow-hidden" style="background-color: #1a1612;">
+        <img src="assets/img/poseidon.png" alt="Restaurant Poseidon" class="w-full h-full object-cover object-center scale-105" style="background-color: #1a1612;">
     </div>
     
     <!-- Overlay -->
-    <div class="absolute inset-0 z-10 bg-gradient-to-b from-dark-900/75 via-dark-800/85 to-dark-900/95 top-0 left-0 right-0 bottom-0"></div>
+    <div class="absolute inset-0 z-10 bg-gradient-to-b from-dark-900 via-dark-800/85 to-dark-900/95 top-0 left-0 right-0 bottom-0"></div>
     
     <!-- Content -->
     <div class="container mx-auto px-4 lg:px-8 max-w-7xl relative z-20 pt-32 pb-20 lg:pt-40 lg:py-32">

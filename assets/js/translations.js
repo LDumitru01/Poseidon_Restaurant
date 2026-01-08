@@ -35,6 +35,8 @@ const translations = {
         'about.story.text2': 'Echipa noastră profesionistă se ocupă de fiecare detaliu, de la meniul personalizat până la decorul sălii, astfel încât tu să te bucuri de evenimentul tău fără stres sau griji.',
         'about.mission.title': 'Misiunea Noastră',
         'about.mission.text': 'Ne dedicăm să creăm experiențe culinare și evenimente care rămân în amintire pentru totdeauna. Fiecare detaliu contează, de la primul contact până la ultimul moment al evenimentului tău.',
+        'about.values.title': 'Valorile Noastre',
+        'about.values.text': 'Credem în excelență, autenticitate și atenție la detalii. Fiecare eveniment este unic și merită să fie tratat cu pasiune și dedicare, transformându-l într-o experiență de neuitat pentru tine și oaspeții tăi. De la primul contact și până în ziua evenimentului, îți oferim suport constant, soluții personalizate și o atmosferă rafinată, astfel încât tu să te poți bucura liniștit de fiecare moment. Pentru noi, nu este doar o organizare, ci o poveste pe care o scriem împreună.',
         'about.benefits.title': 'De Ce Să Ne Alegi',
         'about.benefit1.title': 'Experiență dovedită',
         'about.benefit1.text': 'Ani de experiență în organizarea evenimentelor de neuitat',
@@ -169,6 +171,8 @@ const translations = {
         'about.story.text2': 'Наша профессиональная команда позаботится о каждой детали, от персонализированного меню до оформления зала, чтобы вы могли наслаждаться своим мероприятием без стресса и забот.',
         'about.mission.title': 'Наша миссия',
         'about.mission.text': 'Мы стремимся создавать кулинарные впечатления и мероприятия, которые остаются в памяти навсегда. Каждая деталь важна, от первого контакта до последнего момента вашего мероприятия.',
+        'about.values.title': 'Наши ценности',
+        'about.values.text': 'Мы верим в совершенство, подлинность и внимание к деталям. Каждый event уникален и заслуживает того, чтобы к нему относились с искренней заботой и профессионализмом, превращая его в незабываемое событие для вас и ваших гостей. С первого контакта и до дня мероприятия мы обеспечиваем постоянную поддержку, индивидуальные решения и утончённую атмосферу, чтобы вы могли спокойно наслаждаться каждым моментом. Для нас это не просто организация — это история, которую мы создаём вместе с вами.',
         'about.benefits.title': 'Почему выбрать нас',
         'about.benefit1.title': 'Проверенный опыт',
         'about.benefit1.text': 'Годы опыта в организации незабываемых мероприятий',
@@ -273,20 +277,58 @@ const translations = {
     }
 };
 
+// Funcție pentru a obține limba din URL (din path: /ro sau /ru, funcționează și cu subdirectoare)
+function getLanguageFromURL() {
+    const path = window.location.pathname;
+    const pathParts = path.split('/').filter(part => part !== '');
+    
+    // Caută 'ro' sau 'ru' în path
+    for (let i = 0; i < pathParts.length; i++) {
+        if (pathParts[i] === 'ro' || pathParts[i] === 'ru') {
+            return pathParts[i];
+        }
+    }
+    
+    return 'ro'; // Default
+}
+
+// Funcție pentru a obține base URL-ul (cu subdirectorul dacă există, dar fără limba)
+function getBaseURL() {
+    const path = window.location.pathname;
+    const pathParts = path.split('/').filter(part => part !== '');
+    
+    // Elimină 'ro' sau 'ru' din path
+    const basePathParts = pathParts.filter(part => part !== 'ro' && part !== 'ru');
+    
+    // Construiește base path-ul
+    const basePath = basePathParts.length > 0 ? '/' + basePathParts.join('/') : '';
+    
+    return window.location.origin + basePath;
+}
+
+// Funcție pentru a seta limba în URL (navighează la /ro sau /ru, păstrează subdirectorul)
+function setLanguageInURL(lang) {
+    if (lang !== 'ro' && lang !== 'ru') {
+        return;
+    }
+    
+    const baseURL = getBaseURL();
+    // Construiește noua URL cu limba (după subdirector dacă există)
+    const newURL = baseURL.replace(/\/$/, '') + '/' + lang;
+    
+    // Navighează la noua URL
+    window.location.href = newURL;
+}
+
 // Funcție pentru a obține limba curentă
 function getCurrentLanguage() {
-    return localStorage.getItem('language') || 'ro';
+    return getLanguageFromURL();
 }
 
 // Funcție pentru a seta limba
 function setLanguage(lang) {
     if (translations[lang]) {
-        localStorage.setItem('language', lang);
-        const htmlElement = document.documentElement || document.getElementById('htmlLang');
-        if (htmlElement) {
-            htmlElement.lang = lang;
-        }
-        translatePage();
+        setLanguageInURL(lang); // Aceasta va face redirect automat
     }
 }
 
@@ -349,37 +391,6 @@ function translatePage() {
 
 // Export pentru utilizare globală
 window.translations = translations;
-// Funcție pentru a obține limba din URL
-function getLanguageFromURL() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const lang = urlParams.get('lang');
-    if (lang && (lang === 'ro' || lang === 'ru')) {
-        return lang;
-    }
-    return 'ro'; // Default
-}
-
-// Funcție pentru a seta limba în URL
-function setLanguageInURL(lang) {
-    const url = new URL(window.location.href);
-    url.searchParams.set('lang', lang);
-    window.history.pushState({ lang: lang }, '', url);
-}
-
-// Funcție pentru a obține limba curentă
-function getCurrentLanguage() {
-    return getLanguageFromURL();
-}
-
-// Funcție pentru a seta limba
-function setLanguage(lang) {
-    if (translations[lang]) {
-        setLanguageInURL(lang);
-        document.documentElement.lang = lang;
-        translatePage();
-        updateLanguageButtons();
-    }
-}
 
 // Funcție pentru a actualiza butoanele de limbă
 function updateLanguageButtons() {
